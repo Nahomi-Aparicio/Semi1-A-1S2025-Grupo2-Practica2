@@ -1,0 +1,107 @@
+
+ :root {
+ 
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
+  display: block; }
+
+a {
+  color: #007bff;
+  text-decoration: none;
+  background-color: transparent; }
+  a:hover {
+    color: #0056b3;
+    text-decoration: underline; }
+
+
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.8;
+  font-weight: normal;
+  
+  }
+
+
+.img {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center; }
+
+
+
+  #sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    min-width: 300px;
+    max-width: 300px;
+    background: #093443;
+    color: white;
+    line-height: 3;
+   
+  }
+  #sidebar h3 {
+    text-align: center; }
+  
+  #sidebar ul.components {
+    width: 100%; 
+    text-align: center;
+  }
+  
+  #sidebar ul li a {
+ 
+    text-align: center;
+    padding: 15px 0; 
+  }
+ 
+  #sidebar .logo {
+    display: block;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto; }
+    #sidebar .logo span {
+      display: block; }
+  #sidebar ul.components {
+    padding: 0; }
+  #sidebar ul li {
+    font-size: 16px; }
+    #sidebar ul li > ul {
+      margin-left: 10px; }
+      #sidebar ul li > ul li {
+        font-size: 14px; }
+    #sidebar ul li a {
+      padding: 10px 0;
+      display: block;
+      color: #bd897e;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+      #sidebar ul li a:hover {
+        color: #9c4541; }
+    #sidebar ul li.active > a {
+      background: transparent;
+      color: #9c4541; }
+  @media (max-width: 991.98px) {
+    #sidebar {
+      margin-left: -300px; }
+      #sidebar.active {
+        margin-left: 0; } }
+
+        #content {
+          margin-left: 300px; /* Mismo ancho que el sidebar */
+          width: calc(1656px - 300px); /* Resta el ancho del sidebar */
+          padding: 20px; /* Añade espacio interno */
+          min-height: 100vh;
+          transition: all 0.3s;
+          box-sizing: border-box; /* Incluye padding en el cálculo del ancho */
+          color: #325467;
+        }
+
