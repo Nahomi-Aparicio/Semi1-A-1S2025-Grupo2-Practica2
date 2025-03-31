@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import LoginPage from "../components/LoginPage";
+import LoginPage from "../pages/LoginPage";
 import Principal from "../pages/Principal";
 const AppRouter = () => {
     return (

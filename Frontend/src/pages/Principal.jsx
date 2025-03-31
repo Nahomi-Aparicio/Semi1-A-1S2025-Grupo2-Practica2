@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Principal.css"; // Asegúrate de tener tus estilos adicionales aquí si es necesario
+import "./Principal.css"; 
+import ArchivosSection from "../components/ArchivosSection";
 
+
+import TaskSection from "../components/TaskSection";
 const Principal = () => {
-  // Estado para gestionar qué contenido se debe mostrar
-  const [activeContent, setActiveContent] = useState(null);
 
-  // Función para manejar el clic en el menú
+  const [activeContent, setActiveContent] = useState('TAREAS');
+
   const handleClick = (content) => {
-    setActiveContent(content === activeContent ? null : content); // Cambia el contenido visible
-  };
+    setActiveContent(content === activeContent ? activeContent : content);   };
 
   return (
     <div className="wrapper d-flex align-items-center">     
@@ -22,12 +23,12 @@ const Principal = () => {
 
           <ul className="list-unstyled components mb-5">
             <li>
-              <a href="#" onClick={() => handleClick("hello")}>
+              <a href="#" onClick={() => handleClick("TAREAS")}>
               TAREAS
               </a>
             </li>
             <li>
-              <a href="#" onClick={() => handleClick("files")}>
+              <a href="#" onClick={() => handleClick("ARCHIVOS")}>
                 ARCHIVOS
               </a>
             </li>
@@ -44,16 +45,14 @@ const Principal = () => {
       </nav>
 
       <div id="content" className="p-4 p-md-5">
-        <h2 className="mb-4">Sidebar #01</h2>
-        <p>Este es el contenido de la página principaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffl</p>
-        {activeContent === "hello" && (
+        {activeContent === "TAREAS" && (
           <div>
-            <p>esto es un hola lalallala</p>
+            <TaskSection />
           </div>
         )}
-        {activeContent === "files" && (
+        {activeContent === "ARCHIVOS" && (
           <div>
-            <p>aqui puedes ver tus archivos</p>
+            <ArchivosSection />
           </div>
         )}
       </div>
