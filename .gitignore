@@ -1,0 +1,35 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vscode/
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Dependency directories
+jspm_packages/
+
+# Build directories
+dist/
+build/
+.eslintcache
+.cache/
+.vite/
+
+# React + Vite specific
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+*.env
+*.env.*
+
+# Python
+__pycache__
+
+
