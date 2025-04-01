@@ -3,7 +3,7 @@ import mysql.connector
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         # Reemplaza por tu usuario de MySQL
-    'password': '123456789',   # Reemplaza por tu contraseña de MySQL
+    'password': 'reyes',   # Reemplaza por tu contraseña de MySQL
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
@@ -61,4 +61,52 @@ def logearme(username, password):
 
     except Exception as e:
         print("Error al logear:", e)
+        return False
+
+def crear_tarea(usuario_id, titulo, descripcion):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = """
+            INSERT INTO tareas (usuario_id, titulo, descripcion) 
+            VALUES (%s, %s, %s)
+        """
+        ejecutar.execute(consulta, (usuario_id, titulo, descripcion))
+        conexion.commit()
+        ejecutar.close()
+        conexion.close()
+        return True
+    except Exception as e:
+        print(f"Error al crear tarea: {e}")
+        return False
+    
+
+def editar_tarea(tarea_id, titulo=None, descripcion=None):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        
+        valores = []
+        consulta = "UPDATE tareas SET "
+        
+        if titulo is not None:
+            consulta += "titulo = %s, "
+            valores.append(titulo)
+        
+        if descripcion is not None:
+            consulta += "descripcion = %s, "
+            valores.append(descripcion)
+        
+
+        consulta = consulta.rstrip(", ") + " WHERE id = %s"
+        valores.append(tarea_id)
+        
+        ejecutar.execute(consulta, tuple(valores))
+        conexion.commit()
+        ejecutar.close()
+        conexion.close()
+        
+        return ejecutar.rowcount > 0  
+    except Exception as e:
+        print(f"Error al editar tarea: {e}")
         return False
