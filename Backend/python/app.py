@@ -5,6 +5,10 @@ from acciones_bd import logearme, desloguear, crear_tarea, editar_tarea, registr
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def index():
+    return jsonify({'message': '"API de tareas en funcionamiento en python"'}), 200
+
 @app.route('/login', methods=['POST'])
 def login():
     
