@@ -7,6 +7,7 @@ CORS(app)
 
 @app.route('/login', methods=['POST'])
 def login():
+    
     #Obtenemos del json el username y password
     username = request.json.get('username')
     password = request.json.get('password')

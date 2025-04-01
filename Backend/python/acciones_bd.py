@@ -3,7 +3,7 @@ import mysql.connector
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         # Reemplaza por tu usuario de MySQL
-    'password': 'mysql123',   # Reemplaza por tu contraseña de MySQL
+    'password': '123456789',   # Reemplaza por tu contraseña de MySQL
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
@@ -15,6 +15,7 @@ def get_connection():
 
 def logearme(username, password):
     try:
+        print(username,password,'logearme')
         conn = get_connection()
         cursor = conn.cursor()
 

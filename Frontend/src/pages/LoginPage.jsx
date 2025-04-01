@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./style.css";
 import { useNavigate } from 'react-router-dom';
 
+import API_BASE_URL  from '../config';
+
 const LoginPage = () => {
 
   const [isActive, setIsActive] = useState(false);
@@ -13,21 +15,32 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const login = () => {
-    console.log("Email: ", email);
-    console.log("Password: ", password);
+  const login = async () => {
+    console.log(usuario);
+    console.log(password);
 
-    if (email === "admin" && password === "admin") {
-      console.log("Ingreso");
-     
-      navigate('/principal');
-    } else {
-      alert("Usuario o contraseña incorrecta");
+    try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username:usuario, password:password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log("Ingreso exitoso", data);
+            navigate('/principal');
+        } else {
+            alert(data.message || "Usuario o contraseña incorrecta");
+        }
+    } catch (error) {
+        console.error("Error en la autenticación:", error);
+        alert("Hubo un problema con el servidor");
     }
-  
-    
-
-  }
+};
 
 
 
@@ -68,7 +81,7 @@ const LoginPage = () => {
          
           <span>Introduce tu correo y contraseña</span>
           <br></br>
-          <input type="text" placeholder="Email" id="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="text" placeholder="Usuario" id="Usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
           <input type="password" placeholder="Password" id="Password"value={password} onChange={(e) => setPassword(e.target.value)} />
           <br></br>
           <button type="button"onClick={login}>Iniciar Sesion</button>
