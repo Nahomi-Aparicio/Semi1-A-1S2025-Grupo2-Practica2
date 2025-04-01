@@ -32,3 +32,11 @@ CREATE TABLE archivos (
     fecha_subida DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE userlogeado (
+    id TINYINT NOT NULL DEFAULT 1,
+    usuario_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
