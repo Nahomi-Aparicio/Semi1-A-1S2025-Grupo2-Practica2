@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from acciones_bd import logearme
-from acciones_bd import crear_tarea, editar_tarea
+from acciones_bd import logearme, desloguear, crear_tarea, editar_tarea, registrarusuario
 
 app = Flask(__name__)
 CORS(app)
@@ -23,6 +22,43 @@ def login():
         return jsonify({'error': 'Ya hay un usuario logeado.'}), 400
     else:
         return jsonify({'error': 'Usuario o contraseña incorrectos.'}), 401
+    
+@app.route('/logout', methods=['GET'])
+def logout():
+    try:
+        res=desloguear()
+        if res:
+            return jsonify({'message': 'Logout exitoso'}), 200
+        else:
+            return jsonify({'error': 'No hay usuario logeado.'}), 400
+    except Exception as e:
+        return jsonify({'error': 'Error al desloguear - ' + str(e)}), 400
+    
+
+@app.route('/registraruser', methods=['POST'])
+def registraruser():
+    try:
+        username = request.json.get('username')
+        email = request.json.get('email')
+        password = request.json.get('password')
+        confirmpassword = request.json.get('confirmpassword')
+        imagen = request.json.get('imagen')
+        # Validar que los campos no sean nulos
+        if not username or not email or not password or not confirmpassword:
+            return jsonify({'error': 'Todos los campos son obligatorios.'}), 400
+        # Validar que la contraseña y la confirmación coincidan
+        if password != confirmpassword:
+            return jsonify({'error': 'Las contraseñas no coinciden.'}), 400
+        
+        # Llamar a la función de registro
+        resultado = registrarusuario(username, email, password, imagen)
+        if resultado:
+            return jsonify({'message': 'Usuario registrado exitosamente'}), 201
+        else:
+            return jsonify({'error': 'Error al registrar el usuario'}), 400
+    except Exception as e:
+        return jsonify({'error': 'Error en el registro - ' + str(e)}), 400
+
     
 #crear tareas
 @app.route('/tareas', methods=['POST'])

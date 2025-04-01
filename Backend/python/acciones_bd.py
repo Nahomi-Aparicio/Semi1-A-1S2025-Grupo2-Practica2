@@ -3,7 +3,7 @@ import mysql.connector
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         # Reemplaza por tu usuario de MySQL
-    'password': 'reyes',   # Reemplaza por tu contraseña de MySQL
+    'password': 'mysql123',   # Reemplaza por tu contraseña de MySQL
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
@@ -63,6 +63,33 @@ def logearme(username, password):
         print("Error al logear:", e)
         return False
 
+def desloguear():
+    try:
+        conexion = get_connection()
+        cursor = conexion.cursor()
+
+        # Eliminar el registro del usuario logeado.
+        cursor.execute("DELETE FROM userlogeado WHERE id = 1;")
+        filas_afectadas = cursor.rowcount  # Obtener el número de filas afectadas
+
+        if filas_afectadas == 0:  # Si no se eliminó ninguna fila
+            cursor.close()
+            conexion.close()
+            return False
+
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return True
+
+    except Exception as e:
+        print("Error al desloguear:", e)
+        # Hacemos rollback de la transacción si hubo un error
+        if conexion:
+            conexion.rollback()
+        return False
+
+
 def crear_tarea(usuario_id, titulo, descripcion):
     try:
         conexion = get_connection()
@@ -109,4 +136,40 @@ def editar_tarea(tarea_id, titulo=None, descripcion=None):
         return ejecutar.rowcount > 0  
     except Exception as e:
         print(f"Error al editar tarea: {e}")
+        return False
+    
+
+def registrarusuario(username, email, password, imagen):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+
+        # Verificar si el nombre de usuario ya existe
+        consulta_verificacion = "SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s"
+        ejecutar.execute(consulta_verificacion, (username,))
+        existe_usuario = ejecutar.fetchone()[0]  # Obtener el número de registros encontrados
+
+        if existe_usuario > 0:
+            print("El nombre de usuario ya está registrado.")
+            ejecutar.close()
+            conexion.close()
+            return False  # Retornar False si el usuario ya existe
+
+        # Insertar el nuevo usuario
+        consulta = """
+            INSERT INTO usuarios (nombre_usuario, correo, contrasena, imagen_perfil_url) 
+            VALUES (%s, %s, SHA2(%s, 256), %s)
+        """
+        
+        ejecutar.execute(consulta, (username, email, password, imagen))
+        conexion.commit()
+
+        ejecutar.close()
+        conexion.close()
+        return True
+    
+    except Exception as e:
+        print(f"Error al registrar usuario: {e}")
+        if conexion:
+            conexion.rollback()  # Hacemos rollback de la transacción si hubo un error
         return False
