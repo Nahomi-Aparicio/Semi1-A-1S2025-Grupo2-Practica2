@@ -40,3 +40,10 @@ CREATE TABLE userlogeado (
     PRIMARY KEY (id),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+
+INSERT INTO usuarios (nombre_usuario, correo, contrasena, imagen_perfil_url)
+VALUES ('usuario1', 'usuario1@example.com', SHA2('123', 256), NULL);
+
+INSERT INTO usuarios (nombre_usuario, correo, contrasena, imagen_perfil_url)
+VALUES ('usuario2', 'usuario2@example.com', SHA2('123', 256), NULL);
