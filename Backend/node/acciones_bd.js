@@ -71,6 +71,32 @@ async function registrarusuario(username, email, password, imagen) {
 }
 
 
+// Función para obtener la información del usuario logeado
+async function obtenerUser() {
+    try {
+        // Verificar si hay un usuario logeado
+        const [logged] = await conn.execute(`SELECT usuario_id FROM userlogeado WHERE id = 1`);
+        if (logged.length === 0) {
+            return null; // No hay usuario logeado
+        }
+
+        const userId = logged[0].usuario_id;
+
+        // Obtener información del usuario logeado desde la tabla usuarios
+        const [user] = await conn.execute(`SELECT id, nombre_usuario, correo, imagen_perfil_url FROM usuarios WHERE id = ?`, [userId]);
+
+        if (user.length === 0) {
+            return null; // No se encontró el usuario
+        }
+
+        // Retornar la información del usuario
+        return user[0];
+    } catch (error) {
+        console.error('Error al obtener usuario logeado:', error);
+        return null;
+    }
+}
+
 
 async function cargarArchivo(usuario_id, nombre_archivo, tipo_archivo, archivo_url) {
     try {
@@ -192,5 +218,5 @@ module.exports = {
     logearme, desloguear, registrarusuario,
     cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
     crearTarea, editarTarea,
-    completarTarea, eliminarTarea
+    completarTarea, eliminarTarea, obtenerUser
 };

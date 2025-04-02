@@ -3,7 +3,8 @@ from flask_cors import CORS
 from acciones_bd import (
     logearme, desloguear, crear_tarea, editar_tarea,
     registrarusuario, cargar_archivo, listar_archivos,
-    obtener_usuario_logeado, completar_tarea, eliminar_tarea
+    obtener_usuario_logeado, completar_tarea, eliminar_tarea,
+    obtenerinfologeado
 )
 
 app = Flask(__name__)
@@ -39,6 +40,19 @@ def logout():
             return jsonify({'error': 'No hay usuario logeado.'}), 400
     except Exception as e:
         return jsonify({'error': 'Error al desloguear - ' + str(e)}), 400
+    
+
+
+@app.route('/getuser', methods=['GET'])
+def get_user():
+    try:
+        respuesta=obtenerinfologeado()
+        if respuesta:
+            return jsonify(respuesta), 200
+        else:
+            return jsonify({'error': 'No hay usuario logeado.'}), 400
+    except Exception as e:
+        return jsonify({'error': 'Error al obtener información del usuario - ' + str(e)}), 400
 
 @app.route('/registraruser', methods=['POST'])
 def registraruser():

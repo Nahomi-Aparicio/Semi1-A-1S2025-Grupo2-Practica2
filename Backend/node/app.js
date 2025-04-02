@@ -5,7 +5,8 @@ const {
     logearme, desloguear, registrarusuario,
     crearTarea, editarTarea,
     cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
-    completarTarea, eliminarTarea
+    completarTarea, eliminarTarea,
+    obtenerUser
 } = require('./acciones_bd');
 
 
@@ -67,6 +68,23 @@ app.post('/archivos', async (req, res) => {
         res.status(400).json({ error: 'Error al cargar archivo - ' + error.message });
     }
 });
+
+app.get('/getuser', async (req, res) => {
+    try {
+        // Obtener la información del usuario logeado
+        const usuario = await obtenerUser();
+        if (usuario) {
+            return res.json(usuario); // Retorna la información del usuario
+        } else {
+            return res.status(400).json({ error: 'No hay usuario logeado.' });
+        }
+    } catch (error) {
+        console.error('Error al obtener usuario logeado:', error);
+        return res.status(500).json({ error: 'Error al obtener información del usuario.' });
+    }
+});
+
+
 
 // Ruta para listar archivos del usuario
 app.get('/archivos', async (req, res) => {
