@@ -221,3 +221,39 @@ def listar_archivos(usuario_id):
     except Exception as e:
         print(f"Error al listar archivos: {e}")
         return []
+    
+# Marcar tarea como completada
+def completar_tarea(tarea_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = "UPDATE tareas SET completada = TRUE WHERE id = %s"
+        ejecutar.execute(consulta, (tarea_id,))
+        conexion.commit()
+        filas_afectadas = ejecutar.rowcount
+        ejecutar.close()
+        conexion.close()
+        return filas_afectadas > 0
+    except Exception as e:
+        print(f"Error al completar tarea: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
+
+# Eliminar tarea
+def eliminar_tarea(tarea_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = "DELETE FROM tareas WHERE id = %s"
+        ejecutar.execute(consulta, (tarea_id,))
+        conexion.commit()
+        filas_afectadas = ejecutar.rowcount
+        ejecutar.close()
+        conexion.close()
+        return filas_afectadas > 0
+    except Exception as e:
+        print(f"Error al eliminar tarea: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
