@@ -71,6 +71,32 @@ async function registrarusuario(username, email, password, imagen) {
 }
 
 
+// Función para obtener la información del usuario logeado
+async function obtenerUser() {
+    try {
+        // Verificar si hay un usuario logeado
+        const [logged] = await conn.execute(`SELECT usuario_id FROM userlogeado WHERE id = 1`);
+        if (logged.length === 0) {
+            return null; // No hay usuario logeado
+        }
+
+        const userId = logged[0].usuario_id;
+
+        // Obtener información del usuario logeado desde la tabla usuarios
+        const [user] = await conn.execute(`SELECT id, nombre_usuario, correo, imagen_perfil_url FROM usuarios WHERE id = ?`, [userId]);
+
+        if (user.length === 0) {
+            return null; // No se encontró el usuario
+        }
+
+        // Retornar la información del usuario
+        return user[0];
+    } catch (error) {
+        console.error('Error al obtener usuario logeado:', error);
+        return null;
+    }
+}
+
 
 async function cargarArchivo(usuario_id, nombre_archivo, tipo_archivo, archivo_url) {
     try {
@@ -160,5 +186,41 @@ async function editarTarea(tarea_id, titulo, descripcion) {
     }
 }
 
+// Marcar tarea como completada
+async function completarTarea(tarea_id) {
+    try {
+        const conexion = await conn.getConnection();
+        const [resultado] = await conexion.execute(
+            `UPDATE tareas SET completada = TRUE WHERE id = ?`,
+            [tarea_id]
+        );
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al completar tarea:', error);
+        return false;
+    }
+}
 
-module.exports = { logearme, desloguear, registrarusuario, cargarArchivo, listarArchivos, obtenerUsuarioLogeado, crearTarea, editarTarea };
+// Eliminar tarea
+async function eliminarTarea(tarea_id) {
+    try {
+        const conexion = await conn.getConnection();
+        const [resultado] = await conexion.execute(
+            `DELETE FROM tareas WHERE id = ?`,
+            [tarea_id]
+        );
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al eliminar tarea:', error);
+        return false;
+    }
+}
+
+module.exports = {
+    logearme, desloguear, registrarusuario,
+    cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
+    crearTarea, editarTarea,
+    completarTarea, eliminarTarea, obtenerUser
+};

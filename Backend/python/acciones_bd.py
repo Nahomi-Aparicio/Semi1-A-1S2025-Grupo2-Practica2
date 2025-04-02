@@ -223,3 +223,77 @@ def listar_archivos(usuario_id):
     except Exception as e:
         print(f"Error al listar archivos: {e}")
         return []
+    
+# Marcar tarea como completada
+def completar_tarea(tarea_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = "UPDATE tareas SET completada = TRUE WHERE id = %s"
+        ejecutar.execute(consulta, (tarea_id,))
+        conexion.commit()
+        filas_afectadas = ejecutar.rowcount
+        ejecutar.close()
+        conexion.close()
+        return filas_afectadas > 0
+    except Exception as e:
+        print(f"Error al completar tarea: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
+
+# Eliminar tarea
+def eliminar_tarea(tarea_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = "DELETE FROM tareas WHERE id = %s"
+        ejecutar.execute(consulta, (tarea_id,))
+        conexion.commit()
+        filas_afectadas = ejecutar.rowcount
+        ejecutar.close()
+        conexion.close()
+        return filas_afectadas > 0
+    except Exception as e:
+        print(f"Error al eliminar tarea: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
+
+
+def obtenerinfologeado():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Verificar si hay un usuario logeado en la tabla userlogeado
+        cursor.execute("SELECT usuario_id FROM userlogeado WHERE id = 1;")
+        registro = cursor.fetchone()
+        
+        if not registro:
+            # No hay usuario logeado
+            print("No hay usuario logeado.")
+            return None
+
+        user_id = registro[0]
+
+        # Obtener toda la información del usuario logeado desde la tabla usuarios
+        cursor.execute("SELECT id, nombre_usuario, correo, imagen_perfil_url FROM usuarios WHERE id = %s;", (user_id,))
+        usuario_info = cursor.fetchone()
+
+        if not usuario_info:
+            print("No se encontró la información del usuario.")
+            return None
+
+        cursor.close()
+        conn.close()
+        return {
+            "id": usuario_info[0],
+            "nombre_usuario": usuario_info[1],
+            "correo": usuario_info[2],
+            "imagen_perfil_url": usuario_info[3]
+        }
+
+    except Exception as e:
+        print("Error al obtener la información del usuario logeado:", e)
+        return None

@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from acciones_bd import logearme, desloguear, crear_tarea, editar_tarea, registrarusuario, cargar_archivo, listar_archivos, obtener_usuario_logeado
+from acciones_bd import (
+    logearme, desloguear, crear_tarea, editar_tarea,
+    registrarusuario, cargar_archivo, listar_archivos,
+    obtener_usuario_logeado, completar_tarea, eliminar_tarea,
+    obtenerinfologeado
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -35,6 +40,19 @@ def logout():
             return jsonify({'error': 'No hay usuario logeado.'}), 400
     except Exception as e:
         return jsonify({'error': 'Error al desloguear - ' + str(e)}), 400
+    
+
+
+@app.route('/getuser', methods=['GET'])
+def get_user():
+    try:
+        respuesta=obtenerinfologeado()
+        if respuesta:
+            return jsonify(respuesta), 200
+        else:
+            return jsonify({'error': 'No hay usuario logeado.'}), 400
+    except Exception as e:
+        return jsonify({'error': 'Error al obtener información del usuario - ' + str(e)}), 400
 
 @app.route('/registraruser', methods=['POST'])
 def registraruser():
@@ -132,6 +150,30 @@ def listar_archivos_endpoint():
             return jsonify({'message': 'No hay archivos disponibles.'}), 200
     except Exception as e:
         return jsonify({'error': 'Error al listar archivos - ' + str(e)}), 500
+    
+@app.route('/completar_tarea/<int:tarea_id>', methods=['PATCH'])
+def completar_tarea_endpoint(tarea_id):
+    try:
+        result = completar_tarea(tarea_id)
+        if result:
+            return jsonify({'message': 'Tarea marcada como completada'}), 200
+        else:
+            return jsonify({'message': 'No se pudo marcar la tarea o no existe'}), 400
+    except Exception as e:
+        return jsonify({'message': 'Error al marcar tarea como completada - ' + str(e)}), 500
+
+
+@app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])
+def eliminar_tarea_endpoint(tarea_id):
+    try:
+        result = eliminar_tarea(tarea_id)
+        if result:
+            return jsonify({'message': 'Tarea eliminada exitosamente'}), 200
+        else:
+            return jsonify({'message': 'No se pudo eliminar la tarea o no existe'}), 400
+    except Exception as e:
+        return jsonify({'message': 'Error al eliminar tarea - ' + str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

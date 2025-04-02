@@ -1,7 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { logearme, desloguear, registrarusuario, crearTarea, editarTarea } = require('./acciones_bd');
+const {
+    logearme, desloguear, registrarusuario,
+    crearTarea, editarTarea,
+    cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
+    completarTarea, eliminarTarea,
+    obtenerUser
+} = require('./acciones_bd');
+
 
 const app = express();
 app.use(cors());
@@ -61,6 +68,23 @@ app.post('/archivos', async (req, res) => {
         res.status(400).json({ error: 'Error al cargar archivo - ' + error.message });
     }
 });
+
+app.get('/getuser', async (req, res) => {
+    try {
+        // Obtener la información del usuario logeado
+        const usuario = await obtenerUser();
+        if (usuario) {
+            return res.json(usuario); // Retorna la información del usuario
+        } else {
+            return res.status(400).json({ error: 'No hay usuario logeado.' });
+        }
+    } catch (error) {
+        console.error('Error al obtener usuario logeado:', error);
+        return res.status(500).json({ error: 'Error al obtener información del usuario.' });
+    }
+});
+
+
 
 // Ruta para listar archivos del usuario
 app.get('/archivos', async (req, res) => {
@@ -123,6 +147,34 @@ app.patch('/crear_tarea/:tarea_id', async (req, res) => {
     }
 });
 
+// Marcar tarea como completada
+app.patch('/completar_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const result = await completarTarea(tarea_id);
+        if (result) {
+            return res.status(200).json({ message: 'Tarea marcada como completada' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo marcar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al marcar tarea como completada - ' + error.message });
+    }
+});
 
+// Eliminar tarea
+app.delete('/eliminar_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const result = await eliminarTarea(tarea_id);
+        if (result) {
+            return res.status(200).json({ message: 'Tarea eliminada exitosamente' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo eliminar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al eliminar tarea - ' + error.message });
+    }
+});
 
 app.listen(5000, () => console.log('Servidor corriendo en http://localhost:5000'));
