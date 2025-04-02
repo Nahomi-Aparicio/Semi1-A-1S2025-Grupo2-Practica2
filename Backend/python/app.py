@@ -58,16 +58,18 @@ def registraruser():
     except Exception as e:
         return jsonify({'error': 'Error en el registro - ' + str(e)}), 400
 
-@app.route('/tareas', methods=['POST'])
+
+#crear tareas
+@app.route('/crear_tarea', methods=['POST'])
 def crear_nueva_tarea():
     try:
         usuario_id = request.json.get('usuario_id')
         titulo = request.json.get('titulo')
         descripcion = request.json.get('descripcion')
-
+        
         if not usuario_id or not titulo:
             return jsonify({'message': 'El usuario y el título son obligatorios'}), 400
-
+        
         resultado = crear_tarea(usuario_id, titulo, descripcion)
         if resultado:
             return jsonify({'message': 'Tarea creada exitosamente'}), 201
@@ -76,12 +78,13 @@ def crear_nueva_tarea():
     except Exception as e:
         return jsonify({'message': 'Error al crear tarea - ' + str(e)}), 400
 
-@app.route('/tareas/<int:tarea_id>', methods=['PATCH'])
+#editar tareas
+@app.route('/crear_tarea/<int:tarea_id>', methods=['PATCH'])
 def actualizar_tarea(tarea_id):
     try:
-        titulo = request.json.get('titulo')
-        descripcion = request.json.get('descripcion')
-
+        titulo = request.json.get('titulo')  
+        descripcion = request.json.get('descripcion')  
+        
         if titulo is None and descripcion is None:
             return jsonify({'message': 'Debe proporcionar al menos un campo para actualizar'}), 400
 
@@ -92,6 +95,7 @@ def actualizar_tarea(tarea_id):
             return jsonify({'message': 'No se pudo actualizar la tarea o no existe'}), 400
     except Exception as e:
         return jsonify({'message': 'Error al actualizar tarea - ' + str(e)}), 400
+    
 
 @app.route('/archivos', methods=['POST'])
 def cargar_archivo_endpoint():
