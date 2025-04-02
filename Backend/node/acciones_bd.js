@@ -114,18 +114,22 @@ async function obtenerUsuarioLogeado() {
 
 
 // Crear tarea
-async function crearTarea(usuario_id, titulo, descripcion) {
-    try {
-        const conexion = await conn.getConnection();
-        const consulta = `INSERT INTO tareas (usuario_id, titulo, descripcion) VALUES (?, ?, ?)`;
-        const [resultado] = await conexion.execute(consulta, [usuario_id, titulo, descripcion]);
-        conexion.release();
-        return resultado.affectedRows > 0;
-    } catch (error) {
-        console.error('Error al crear tarea:', error);
-        return false;
-    }
-}
+function crearTarea(usuario_id, titulo, descripcion, fecha_creacion) {
+    return new Promise((resolve, reject) => {
+      const consulta = `
+        INSERT INTO tareas (usuario_id, titulo, descripcion, fecha_creacion) 
+        VALUES (?, ?, ?, ?)
+      `;
+      // Cambiar 'conexion' por 'conn' para utilizar la conexión correctamente
+      conn.execute(consulta, [usuario_id, titulo, descripcion, fecha_creacion])
+        .then(() => resolve(true))
+        .catch(err => {
+          console.log('Error al crear tarea:', err);
+          reject(false);
+        });
+    });
+  }
+  
 
 // Editar tarea
 async function editarTarea(tarea_id, titulo, descripcion) {

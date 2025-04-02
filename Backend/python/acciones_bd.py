@@ -94,15 +94,16 @@ def desloguear():
             conexion.rollback()
         return False
 
-def crear_tarea(usuario_id, titulo, descripcion):
+def crear_tarea(usuario_id, titulo, descripcion, fecha_creacion):
     try:
         conexion = get_connection()
         ejecutar = conexion.cursor()
+        
         consulta = """
-            INSERT INTO tareas (usuario_id, titulo, descripcion) 
-            VALUES (%s, %s, %s)
+            INSERT INTO tareas (usuario_id, titulo, descripcion, fecha_creacion) 
+            VALUES (%s, %s, %s, %s)
         """
-        ejecutar.execute(consulta, (usuario_id, titulo, descripcion))
+        ejecutar.execute(consulta, (usuario_id, titulo, descripcion, fecha_creacion))
         conexion.commit()
         ejecutar.close()
         conexion.close()
@@ -110,6 +111,7 @@ def crear_tarea(usuario_id, titulo, descripcion):
     except Exception as e:
         print(f"Error al crear tarea: {e}")
         return False
+
     
 
 def editar_tarea(tarea_id, titulo=None, descripcion=None):
