@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Principal.css"; 
 import ArchivosSection from "../components/ArchivosSection";
-
+import API_BASE_URL  from '../config';
+import { useNavigate } from 'react-router-dom';
 
 import TaskSection from "../components/TaskSection";
 const Principal = () => {
@@ -12,11 +13,63 @@ const Principal = () => {
   const handleClick = (content) => {
     setActiveContent(content === activeContent ? activeContent : content);   };
 
+    const navigate = useNavigate();
+
+    const [usuario, setUsuario] = useState(null);
+    const [imagen, setImagen] = useState(null);
+
+
+    useEffect(() => {
+
+
+      const getuser = async () => {
+        try {
+        
+          const response = await fetch(`${API_BASE_URL}/getuser`, {
+            method: 'GET', 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          const data = await response.json();
+          console.log(data.imagen_perfil_url);
+          setUsuario(data.id);
+          setImagen(data.imagen_perfil_url);
+          
+      } catch (error) {
+          alert(`Hubo un problema con el servidor: ${error.message}`);
+      }
+    };
+
+  getuser();
+}, []);
+
+    const logout = async () => {
+      try {
+          const response = await fetch(`${API_BASE_URL}/logout`, { method: "GET" });
+  
+          if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`Error ${response.status}: ${errorText}`);
+          }
+  
+          navigate('/');
+      } catch (error) {
+          console.error("Error en logout:", error);
+          alert(`Hubo un problema con el servidor: ${error.message}`);
+      }
+  };
+  
+  
+
+
+
   return (
     <div className="wrapper d-flex align-items-center">     
       <nav id="sidebar">
         <div className="p-4 pt-5">          
-          <a  className="img logo rounded-circle mb-5" style={{ backgroundImage: "url('https://i.pinimg.com/736x/0a/32/86/0a32866eb3bbed287809dbda147189bd.jpg')" }}>
+          <a  className="img logo rounded-circle mb-5" style={{ backgroundImage: "url(" + imagen + ")" }}>
           </a>
           <h3>TaskFlow + CloudDrive
             </h3>
@@ -35,7 +88,8 @@ const Principal = () => {
           </ul>
 
           
-          <div className="footer">
+          <div className="footer" style={{position: 'absolute', bottom: '0', width: '100%'}}>
+            <button className="btn " onClick={logout} style={{width: '90%', backgroundColor: '#093443', color: 'white'}}>Cerrar Sesion</button>
             <p>
               Copyright &copy;
               <script>document.write(new Date().getFullYear());</script> All rights reserved

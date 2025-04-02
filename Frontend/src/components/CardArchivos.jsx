@@ -5,14 +5,18 @@ const CardArchivos = ({ id, nombre, archivo }) => {
   const textStyle = {};
 
   useEffect(() => {
+    console.log(archivo, nombre, id);
    
-    if (archivo === 'pdf') {
-   
-      setImgSrc('https://i.pinimg.com/736x/7d/3e/1c/7d3e1c075ba161cd833e783629d2a6a9.jpg');
-    } else if (archivo === 'img') {
-      textStyle.color = 'green';
+    // Obtener el tipo de archivo
+    const fileType = archivo.split('/')[0]; // "application" o "image"
+
+    if (fileType === 'image' ) {
       setImgSrc('https://i.pinimg.com/736x/df/22/13/df2213c30f4397e9292e20f99583f304.jpg'); 
-    } 
+
+    } else  {
+      
+      setImgSrc('https://i.pinimg.com/736x/7d/3e/1c/7d3e1c075ba161cd833e783629d2a6a9.jpg');
+    }
   }, [archivo]); 
 
   return (
@@ -26,8 +30,8 @@ const CardArchivos = ({ id, nombre, archivo }) => {
             style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
           />
         )}
-        <h5 className="card-title" style={{ color: '#093443', fontWeight: 'bold', fontSize: '25px', ...textStyle }}>
-          {nombre}.{archivo}
+        <h5 className="card-title" style={{ color: '#093443', fontWeight: 'bold', fontSize: '15px', ...textStyle }}>
+          {nombre}
         </h5>
       </div>
     </div>

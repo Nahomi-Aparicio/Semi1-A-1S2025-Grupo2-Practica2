@@ -32,7 +32,12 @@ const LoginPage = () => {
 
         if (response.ok) {
             console.log("Ingreso exitoso", data);
+            setPassword("");
+            setEmail("");
+            setUsuario("");
+
             navigate('/principal');
+
         } else {
             alert(data.message || "Usuario o contraseña incorrecta");
         }
@@ -44,7 +49,7 @@ const LoginPage = () => {
 
 
 
-  const Registrar = () => {
+  const Registrar = async () => {
     console.log("Email: ", email);
     console.log("Password: ", password);
     console.log("Usuario: ", usuario);
@@ -52,9 +57,35 @@ const LoginPage = () => {
     console.log("Confirmar Password: ", confirmarPassword);
 
 
-    
+    try {
+      const response = await fetch(`${API_BASE_URL}/registraruser`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username:usuario,email:email, password:password, confirmpassword:confirmarPassword, imagen:imagen })
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+          console.log("Ingreso exitoso", data);
+          setPassword("");
+          setEmail("");
+          setUsuario("");
+          setImagen("");
+          setConfirmarPassword("");
+
+          alert(data.message || "Ingreso exitoso");
+
+      } else {
+          alert(data.message || "Usuario o contraseña incorrecta");
+      }
+  } catch (error) {
+      console.error("Error en la autenticación:", error);
+      alert("Hubo un problema con el servidor");
   }
+};
 
 
 

@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const config = {
     host: 'localhost',
     user: 'root',
-    password: 'mysql123',  // Cambia esto por tu contraseña de MySQL
+    password: '123456789',  // Cambia esto por tu contraseña de MySQL
     database: 'taskflow_cloud'
 };
 

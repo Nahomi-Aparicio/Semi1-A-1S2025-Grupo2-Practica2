@@ -10,11 +10,11 @@ from acciones_bd import (
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
+@app.route('/') 
 def index():
     return jsonify({'message': 'API de tareas en funcionamiento en python'}), 200
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST'])#------------------------------
 def login():
     username = request.json.get('username')
     password = request.json.get('password')
@@ -30,7 +30,7 @@ def login():
     else:
         return jsonify({'error': 'Usuario o contraseña incorrectos.'}), 401
 
-@app.route('/logout', methods=['GET'])
+@app.route('/logout', methods=['GET'])#------------------------------
 def logout():
     try:
         res = desloguear()
@@ -43,7 +43,7 @@ def logout():
     
 
 
-@app.route('/getuser', methods=['GET'])
+@app.route('/getuser', methods=['GET'])#------------------------------
 def get_user():
     try:
         respuesta=obtenerinfologeado()
@@ -54,7 +54,7 @@ def get_user():
     except Exception as e:
         return jsonify({'error': 'Error al obtener información del usuario - ' + str(e)}), 400
 
-@app.route('/registraruser', methods=['POST'])
+@app.route('/registraruser', methods=['POST'])#------------------------------
 def registraruser():
     try:
         username = request.json.get('username')
@@ -77,14 +77,16 @@ def registraruser():
         return jsonify({'error': 'Error en el registro - ' + str(e)}), 400
 
 
-@app.route('/crear_tarea', methods=['POST'])
+@app.route('/crear_tarea', methods=['POST'])#------------------------------
 def crear_nueva_tarea():
     try:
+        
         usuario_id = request.json.get('usuario_id')
         titulo = request.json.get('titulo')
         descripcion = request.json.get('descripcion')
         fecha_creacion = request.json.get('fecha_creacion')  
         
+        print(titulo, descripcion, fecha_creacion, usuario_id)
         # Validación de campos
         if not usuario_id or not titulo or not fecha_creacion:
             return jsonify({'message': 'El usuario, el título y la fecha son obligatorios'}), 400
@@ -117,7 +119,7 @@ def actualizar_tarea(tarea_id):
         return jsonify({'message': 'Error al actualizar tarea - ' + str(e)}), 400
     
 
-@app.route('/archivos', methods=['POST'])
+@app.route('/archivos', methods=['POST'])#------------------------------
 def cargar_archivo_endpoint():
     try:
         usuario_id = request.json.get('usuario_id')
@@ -136,7 +138,7 @@ def cargar_archivo_endpoint():
     except Exception as e:
         return jsonify({'error': 'Error al cargar archivo - ' + str(e)}), 400
 
-@app.route('/archivos', methods=['GET'])
+@app.route('/archivos', methods=['GET'])#------------------------------
 def listar_archivos_endpoint():
     try:
         usuario_id = obtener_usuario_logeado()
@@ -144,6 +146,7 @@ def listar_archivos_endpoint():
             return jsonify({'error': 'No hay usuario logeado.'}), 401
 
         archivos = listar_archivos(usuario_id)
+        print(archivos)
         if archivos:
             return jsonify({'archivos': archivos}), 200
         else:

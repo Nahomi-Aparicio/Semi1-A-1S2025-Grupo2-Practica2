@@ -1,24 +1,97 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import CardArchivos from "./CardArchivos";
 import './style.css';
+import API_BASE_URL  from '../config';
 
 const ArchivosSection = () => {
  
 
 
-  const tasks = [
-    { id: 1, nombre: "Gol", archivo:'pdf' },
-    { id: 2, nombre: "Gol", archivo:'pdf' },
-    { id: 3, nombre: "Gol", archivo:'img' },
-    { id: 1, nombre: "Gol", archivo:'pdf' },
-    { id: 2, nombre: "Gol", archivo:'pdf' },
-    { id: 3, nombre: "Gol", archivo:'img' }, { id: 1, nombre: "Gol", archivo:'pdf' },
-    { id: 2, nombre: "Gol", archivo:'pdf' },
-    { id: 3, nombre: "Gol", archivo:'img' }, { id: 1, nombre: "Gol", archivo:'pdf' },
-    { id: 2, nombre: "Gol", archivo:'pdf' },
-    { id: 3, nombre: "Gol", archivo:'img' },
+ 
 
-  ];
+  const [usuario, setUsuario] = useState(null);
+  const [tasks, setTasks] = useState([]);
+
+
+  useEffect(() => {
+
+
+    const getuser = async () => {
+      try {
+      
+        const response = await fetch(`${API_BASE_URL}/getuser`, {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data.id);
+        setUsuario(data.id);
+        
+    } catch (error) {
+        alert(`Hubo un problema con el servidor: ${error.message}`);
+    }
+  };
+
+  const archivos = async () => {
+    try {
+      
+        const response = await fetch(`${API_BASE_URL}/archivos`, {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data.archivos);
+        setTasks(data.archivos);
+        
+    } catch (error) {
+        console.error("Error en logout:", error);
+        alert(`Hubo un problema con el servidor: ${error.message}`);
+    }
+};
+archivos();
+getuser();
+}, []);
+
+
+const archivossubir = async (file) => {
+  try {
+      if (!file) {
+          alert("Por favor, selecciona un archivo.");
+          return;
+      }
+
+      const formData = {
+          usuario_id: usuario,
+          archivo_url: 'https://i.pinimg.com/736x/8b/69/d6/8b69d6444596d4741c3d9182c62f9d3b.jpg',
+          nombre_archivo: file.name,
+          tipo_archivo: file.type,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/archivos`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${await response.text()}`);
+      }
+
+      const data = await response.json();
+      alert("Archivo subido con éxito");
+  } catch (error) {
+      console.error("Error al subir el archivo:", error);
+      alert("Hubo un problema con el servidor");
+  }
+};
 
 
   const css = `
@@ -45,15 +118,20 @@ const ArchivosSection = () => {
       <h2 style={{ textAlign: "center", color: "#aa5148" ,fontWeight: 'bold', fontSize: '35px' }}>SECCION DE ARCHIVOS</h2>
 
       <div className="file-input-wrapper">
-  <input 
+      <input 
     type="file" 
     id="file"
     onChange={(e) => {
-   
-      const fileName = e.target.files[0]?.name || 'Ningún archivo seleccionado';
-      document.querySelector('.file-input-name').textContent = fileName;
+        const file = e.target.files[0]; // Obtiene el archivo seleccionado
+        if (file) {
+            document.querySelector('.file-input-name').textContent = `Nombre: ${file.name} | Tipo: ${file.type}`;
+            archivossubir(file); // Llamar la función para subir archivo
+        } else {
+            document.querySelector('.file-input-name').textContent = "Ningún archivo seleccionado";
+        }
     }}
-  />
+/>
+
   <label htmlFor="simple-file-upload" className="file-input-btn">
     Seleccionar archivo
   </label>
@@ -74,11 +152,11 @@ const ArchivosSection = () => {
         }}
       > {tasks.map((task) => (
         <CardArchivos
-          key={task.id}
-          id={task.id}
-          nombre={task.nombre}
-          archivo={task.archivo}
-         
+        key={task[0]}  // Mejor usar el índice como key, pero puedes usar otro identificador único si lo tienes
+        id={task[0]}  // Tercer elemento, el ID
+        nombre={task[2]}  // Quinto elemento, el nombre del archivo
+        archivo={task[3]}  // Sexto elemento, la URL de la imagen o archivo
+      
         />
       ))}
     </div>

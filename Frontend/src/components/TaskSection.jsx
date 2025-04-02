@@ -17,6 +17,34 @@ const TaskSection = () => {
 
   ];
 
+  /*
+  const Cretareas = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tareas`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+          console.log("Ingreso exitoso", data);
+          
+
+          
+
+      } else {
+          alert(data.message || "No hay tareas creadas");
+      }
+  } catch (error) {
+      
+      alert("Hubo un problema con el servidor");
+  }
+};
+*/
 
   const css = `
     .hide-scrollbar {

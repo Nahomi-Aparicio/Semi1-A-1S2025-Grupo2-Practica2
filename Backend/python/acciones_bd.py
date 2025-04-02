@@ -3,7 +3,7 @@ import mysql.connector
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         
-    'password': 'mysql123',  
+    'password': '123456789',  
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
