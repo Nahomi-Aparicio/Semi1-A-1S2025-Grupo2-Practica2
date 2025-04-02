@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CardArchivos = ({ id, nombre, archivo }) => {
+const CardArchivos = ({ id, nombre, archivo, url }) => {
   const [imgSrc, setImgSrc] = useState('');
   const textStyle = {};
 
@@ -27,12 +27,15 @@ const CardArchivos = ({ id, nombre, archivo }) => {
             src={imgSrc}
             className="card-img-top"
             alt={`Icono de ${archivo}`}
-            style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+            style={{ width: '90%', height: 'auto', objectFit: 'cover' }}
           />
         )}
-        <h5 className="card-title" style={{ color: '#093443', fontWeight: 'bold', fontSize: '15px', ...textStyle }}>
-          {nombre}
-        </h5>
+        <br />
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+          <h5 className="card-title" style={{ color: '#093443', fontWeight: 'bold', fontSize: '15px', ...textStyle }}>
+            {nombre}
+          </h5>
+        </a>
       </div>
     </div>
   );

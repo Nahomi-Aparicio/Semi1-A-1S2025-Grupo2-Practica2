@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import CreateTaskModal from "./CreateTaskModal";
 import Card from "./Card";
-
+import API_BASE_URL  from '../config';
 const TaskSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -10,41 +10,58 @@ const TaskSection = () => {
     setIsModalOpen(!isModalOpen);
   };
 
+  const [usuario, setUsuario] = useState(null);
+  const [tasks, setTasks] = useState([]);
 
-  const tasks = [
-    { id: 1, nombre: "Gol", descripcion: "Esta es una tarea", fecha: "19/02/2001", completed: false },
-    { id: 2, nombre: "Gol", descripcion: "Esta es una tarea", fecha: "19/02/2001", completed: true },
 
-  ];
 
-  /*
-  const Cretareas = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tareas`, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          
-      });
+ 
+  useEffect(() => {
 
-      const data = await response.json();
 
-      if (response.ok) {
-          console.log("Ingreso exitoso", data);
-          
-
-          
-
-      } else {
-          alert(data.message || "No hay tareas creadas");
-      }
-  } catch (error) {
+    const getuser = async () => {
+      try {
       
-      alert("Hubo un problema con el servidor");
-  }
+        const response = await fetch(`${API_BASE_URL}/getuser`, {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data.id);
+        setUsuario(data.id);
+        
+    } catch (error) {
+        alert(`Hubo un problema con el servidor: ${error.message}`);
+    }
+  };
+
+  const tareas = async () => {
+    try {
+      
+        const response = await fetch(`${API_BASE_URL}/tareas`, {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data.tareas);
+        setTasks(data.tareas);
+        
+        
+    } catch (error) {
+        console.error("Error en logout:", error);
+        alert(`Hubo un problema con el servidor: ${error.message}`);
+    }
 };
-*/
+tareas();
+getuser();
+}, []);
+
 
   const css = `
     .hide-scrollbar {
@@ -101,10 +118,11 @@ const TaskSection = () => {
         {tasks.map((task) => (
           <Card
             key={task.id}
-            nombre={task.nombre}
+            id={task.id}
+            nombre={task.titulo}
             descripcion={task.descripcion}
-            fecha={task.fecha}
-            completed={task.completed}
+            fecha={task.fecha_creacion}
+            completed={task.completada}
           />
         ))}
       </div>

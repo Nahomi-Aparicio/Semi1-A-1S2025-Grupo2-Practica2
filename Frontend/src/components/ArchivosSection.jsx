@@ -156,6 +156,7 @@ const archivossubir = async (file) => {
         id={task[0]}  // Tercer elemento, el ID
         nombre={task[2]}  // Quinto elemento, el nombre del archivo
         archivo={task[3]}  // Sexto elemento, la URL de la imagen o archivo
+        url={task[4]}
       
         />
       ))}

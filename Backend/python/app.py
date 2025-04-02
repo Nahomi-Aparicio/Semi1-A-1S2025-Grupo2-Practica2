@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
 from acciones_bd import (
     logearme, desloguear, crear_tarea, editar_tarea,
     registrarusuario, cargar_archivo, listar_archivos,
     obtener_usuario_logeado, completar_tarea, eliminar_tarea,
-    obtenerinfologeado
+    obtenerinfologeado, listar_tareas,descompletar_tarea
 )
 
 app = Flask(__name__)
@@ -101,7 +102,7 @@ def crear_nueva_tarea():
 
 
 #editar tareas
-@app.route('/crear_tarea/<int:tarea_id>', methods=['PATCH'])
+@app.route('/crear_tarea/<int:tarea_id>', methods=['PATCH']) #------------------------------
 def actualizar_tarea(tarea_id):
     try:
         titulo = request.json.get('titulo')  
@@ -154,7 +155,7 @@ def listar_archivos_endpoint():
     except Exception as e:
         return jsonify({'error': 'Error al listar archivos - ' + str(e)}), 500
     
-@app.route('/completar_tarea/<int:tarea_id>', methods=['PATCH'])
+@app.route('/completar_tarea/<int:tarea_id>', methods=['PATCH']) #------------------------------
 def completar_tarea_endpoint(tarea_id):
     try:
         result = completar_tarea(tarea_id)
@@ -165,9 +166,23 @@ def completar_tarea_endpoint(tarea_id):
     except Exception as e:
         return jsonify({'message': 'Error al marcar tarea como completada - ' + str(e)}), 500
 
+@app.route('/descompletar_tarea/<int:tarea_id>', methods=['PATCH']) #------------------------------
+def descompletar_tarea_endpoint(tarea_id):
+    print(tarea_id)
+    try:
+        result = descompletar_tarea(tarea_id)
+        if result:
+            return jsonify({'message': 'Tarea marcada como pendiente'}), 200
+        else:
+            return jsonify({'message': 'No se pudo desmarcar la tarea o no existe'}), 400
+    except Exception as e:
+        return jsonify({'message': 'Error al marcar tarea como pendiente - ' + str(e)}), 500
 
-@app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])
+
+
+@app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])#------------------------------
 def eliminar_tarea_endpoint(tarea_id):
+    print(tarea_id)
     try:
         result = eliminar_tarea(tarea_id)
         if result:
@@ -176,6 +191,25 @@ def eliminar_tarea_endpoint(tarea_id):
             return jsonify({'message': 'No se pudo eliminar la tarea o no existe'}), 400
     except Exception as e:
         return jsonify({'message': 'Error al eliminar tarea - ' + str(e)}), 500
+
+
+
+# Endpoint para listar tareas
+@app.route('/tareas', methods=['GET'])#------------------------------
+def listar_tareas_endpoint():
+    try:
+        usuario_id = obtener_usuario_logeado()
+        if not usuario_id:
+            return jsonify({'error': 'No hay usuario logeado.'}), 401
+
+        tareas = listar_tareas(usuario_id)
+        print(tareas)
+        if tareas:
+            return jsonify({'tareas': tareas}), 200
+        else:
+            return jsonify({'message': 'No hay tareas disponibles.'}), 200
+    except Exception as e:
+        return jsonify({'error': 'Error al listar tareas - ' + str(e)}), 500
 
 
 if __name__ == '__main__':
