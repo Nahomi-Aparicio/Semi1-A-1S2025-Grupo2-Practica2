@@ -70,4 +70,46 @@ async function registrarusuario(username, email, password, imagen) {
     }
 }
 
+
+
+async function cargarArchivo(usuario_id, nombre_archivo, tipo_archivo, archivo_url) {
+    try {
+        await conn.execute(
+            `INSERT INTO archivos (usuario_id, nombre_archivo, tipo_archivo, url_archivo) 
+            VALUES (?, ?, ?, ?)`,
+            [usuario_id, nombre_archivo, tipo_archivo, archivo_url]
+        );
+        return true;
+    } catch (error) {
+        console.error('Error al cargar archivo:', error);
+        return false;
+    }
+}
+
+async function listarArchivos(usuarioId) {
+    try {
+        const [archivos] = await conn.execute(
+            `SELECT * FROM archivos WHERE usuario_id = ?`,
+            [usuarioId]
+        );
+        return archivos;
+    } catch (error) {
+        console.error('Error al listar archivos:', error);
+        return [];
+    }
+}
+
+async function obtenerUsuarioLogeado() {
+    try {
+        const [result] = await conn.execute(
+            `SELECT usuario_id FROM userlogeado WHERE id = 1`
+        );
+        return result[0]?.usuario_id || null;
+    } catch (error) {
+        console.error('Error al obtener usuario logeado:', error);
+        return null;
+    }
+}
+
+
 module.exports = { logearme, desloguear, registrarusuario };

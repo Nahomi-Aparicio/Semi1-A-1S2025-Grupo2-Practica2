@@ -2,8 +2,8 @@ import mysql.connector
 
 # Configuración de la conexión a la base de datos
 config = {
-    'user': 'root',         # Reemplaza por tu usuario de MySQL
-    'password': 'mysql123',   # Reemplaza por tu contraseña de MySQL
+    'user': 'root',         
+    'password': 'mysql123',  
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
@@ -13,13 +13,29 @@ def get_connection():
     return mysql.connector.connect(**config)
 
 
-def logearme(username, password):
+def obtener_usuario_logeado():
     try:
-        print(username,password,'logearme')
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Verificar si el usuario existe y la contraseña es correcta.
+        cursor.execute("SELECT usuario_id FROM userlogeado WHERE id = 1;")
+        result = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return result[0] if result else None
+
+    except Exception as e:
+        print("Error al obtener usuario logeado:", e)
+        return None
+    
+
+def logearme(username, password):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
         query = """
             SELECT id 
             FROM usuarios 
@@ -30,33 +46,24 @@ def logearme(username, password):
         cursor.execute(query, (username, password))
         result = cursor.fetchone()
         if not result:
-            # Usuario no encontrado o credenciales incorrectas.
             return False
 
         user_id = result[0]
 
-        # Verificar si ya hay un usuario logeado en la tabla.
         cursor.execute("SELECT usuario_id FROM userlogeado WHERE id = 1;")
         registro = cursor.fetchone()
         if registro:
-            print("SI HAY REGISTRO")
             if registro[0] == user_id:
-                # El mismo usuario ya está logeado, no es necesario insertar.
-                print("El usuario ya está logeado.")
                 return None
             else:
-                # Se actualiza el registro con el nuevo usuario.
                 cursor.execute("UPDATE userlogeado SET usuario_id = %s WHERE id = 1;", (user_id,))
                 conn.commit()
-                print("Se actualizó el usuario logeado.")
         else:
-            # No existe registro, se inserta el usuario logeado.
             cursor.execute("INSERT INTO userlogeado (id, usuario_id) VALUES (1, %s);", (user_id,))
             conn.commit()
-            cursor.close()
-            conn.close()
-            print("Usuario logeado con éxito.")
 
+        cursor.close()
+        conn.close()
         return True
 
     except Exception as e:
@@ -68,11 +75,10 @@ def desloguear():
         conexion = get_connection()
         cursor = conexion.cursor()
 
-        # Eliminar el registro del usuario logeado.
         cursor.execute("DELETE FROM userlogeado WHERE id = 1;")
-        filas_afectadas = cursor.rowcount  # Obtener el número de filas afectadas
+        filas_afectadas = cursor.rowcount
 
-        if filas_afectadas == 0:  # Si no se eliminó ninguna fila
+        if filas_afectadas == 0:
             cursor.close()
             conexion.close()
             return False
@@ -84,11 +90,9 @@ def desloguear():
 
     except Exception as e:
         print("Error al desloguear:", e)
-        # Hacemos rollback de la transacción si hubo un error
         if conexion:
             conexion.rollback()
         return False
-
 
 def crear_tarea(usuario_id, titulo, descripcion):
     try:
@@ -106,13 +110,12 @@ def crear_tarea(usuario_id, titulo, descripcion):
     except Exception as e:
         print(f"Error al crear tarea: {e}")
         return False
-    
 
 def editar_tarea(tarea_id, titulo=None, descripcion=None):
     try:
         conexion = get_connection()
         ejecutar = conexion.cursor()
-        
+
         valores = []
         consulta = "UPDATE tareas SET "
         
@@ -123,39 +126,34 @@ def editar_tarea(tarea_id, titulo=None, descripcion=None):
         if descripcion is not None:
             consulta += "descripcion = %s, "
             valores.append(descripcion)
-        
 
         consulta = consulta.rstrip(", ") + " WHERE id = %s"
         valores.append(tarea_id)
-        
+
         ejecutar.execute(consulta, tuple(valores))
         conexion.commit()
         ejecutar.close()
         conexion.close()
-        
+
         return ejecutar.rowcount > 0  
     except Exception as e:
         print(f"Error al editar tarea: {e}")
         return False
-    
 
 def registrarusuario(username, email, password, imagen):
     try:
         conexion = get_connection()
         ejecutar = conexion.cursor()
 
-        # Verificar si el nombre de usuario ya existe
         consulta_verificacion = "SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s"
         ejecutar.execute(consulta_verificacion, (username,))
-        existe_usuario = ejecutar.fetchone()[0]  # Obtener el número de registros encontrados
+        existe_usuario = ejecutar.fetchone()[0]
 
         if existe_usuario > 0:
-            print("El nombre de usuario ya está registrado.")
             ejecutar.close()
             conexion.close()
-            return False  # Retornar False si el usuario ya existe
+            return False
 
-        # Insertar el nuevo usuario
         consulta = """
             INSERT INTO usuarios (nombre_usuario, correo, contrasena, imagen_perfil_url) 
             VALUES (%s, %s, SHA2(%s, 256), %s)
@@ -167,9 +165,51 @@ def registrarusuario(username, email, password, imagen):
         ejecutar.close()
         conexion.close()
         return True
-    
+
     except Exception as e:
         print(f"Error al registrar usuario: {e}")
         if conexion:
-            conexion.rollback()  # Hacemos rollback de la transacción si hubo un error
+            conexion.rollback()
         return False
+
+# Cargar archivo
+def cargar_archivo(usuario_id, nombre_archivo, tipo_archivo, archivo_url):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+
+        consulta = """
+            INSERT INTO archivos (usuario_id, nombre_archivo, tipo_archivo, url_archivo) 
+            VALUES (%s, %s, %s, %s)
+        """
+        ejecutar.execute(consulta, (usuario_id, nombre_archivo, tipo_archivo, archivo_url))
+        conexion.commit()
+
+        ejecutar.close()
+        conexion.close()
+        return True
+
+    except Exception as e:
+        print(f"Error al cargar archivo: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
+
+# Listar archivos
+def listar_archivos(usuario_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+
+        consulta = "SELECT * FROM archivos WHERE usuario_id = %s"
+        ejecutar.execute(consulta, (usuario_id,))
+        archivos = ejecutar.fetchall()
+
+        ejecutar.close()
+        conexion.close()
+
+        return archivos if archivos else []
+
+    except Exception as e:
+        print(f"Error al listar archivos: {e}")
+        return []
