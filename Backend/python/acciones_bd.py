@@ -110,6 +110,7 @@ def crear_tarea(usuario_id, titulo, descripcion):
     except Exception as e:
         print(f"Error al crear tarea: {e}")
         return False
+    
 
 def editar_tarea(tarea_id, titulo=None, descripcion=None):
     try:
@@ -118,24 +119,31 @@ def editar_tarea(tarea_id, titulo=None, descripcion=None):
 
         valores = []
         consulta = "UPDATE tareas SET "
-        
+
         if titulo is not None:
             consulta += "titulo = %s, "
             valores.append(titulo)
-        
+
         if descripcion is not None:
             consulta += "descripcion = %s, "
             valores.append(descripcion)
+
+        if not valores:
+            print("No hay valores para actualizar")
+            return False  
 
         consulta = consulta.rstrip(", ") + " WHERE id = %s"
         valores.append(tarea_id)
 
         ejecutar.execute(consulta, tuple(valores))
         conexion.commit()
+
+        filas_afectadas = ejecutar.rowcount
+
         ejecutar.close()
         conexion.close()
 
-        return ejecutar.rowcount > 0  
+        return filas_afectadas > 0
     except Exception as e:
         print(f"Error al editar tarea: {e}")
         return False

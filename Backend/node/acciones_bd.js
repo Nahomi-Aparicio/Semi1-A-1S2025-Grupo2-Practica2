@@ -112,4 +112,49 @@ async function obtenerUsuarioLogeado() {
 }
 
 
-module.exports = { logearme, desloguear, registrarusuario };
+
+// Crear tarea
+async function crearTarea(usuario_id, titulo, descripcion) {
+    try {
+        const conexion = await conn.getConnection();
+        const consulta = `INSERT INTO tareas (usuario_id, titulo, descripcion) VALUES (?, ?, ?)`;
+        const [resultado] = await conexion.execute(consulta, [usuario_id, titulo, descripcion]);
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al crear tarea:', error);
+        return false;
+    }
+}
+
+// Editar tarea
+async function editarTarea(tarea_id, titulo, descripcion) {
+    try {
+        const conexion = await conn.getConnection();
+        let consulta = 'UPDATE tareas SET ';
+        let valores = [];
+        
+        if (titulo) {
+            consulta += 'titulo = ?, ';
+            valores.push(titulo);
+        }
+        if (descripcion) {
+            consulta += 'descripcion = ?, ';
+            valores.push(descripcion);
+        }
+        if (valores.length === 0) return false;
+
+        consulta = consulta.slice(0, -2) + ' WHERE id = ?';
+        valores.push(tarea_id);
+
+        const [resultado] = await conexion.execute(consulta, valores);
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al editar tarea:', error);
+        return false;
+    }
+}
+
+
+module.exports = { logearme, desloguear, registrarusuario, cargarArchivo, listarArchivos, obtenerUsuarioLogeado, crearTarea, editarTarea };

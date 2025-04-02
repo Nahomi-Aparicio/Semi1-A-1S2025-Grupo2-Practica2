@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { logearme, desloguear, registrarusuario } = require('./acciones_bd');
+const { logearme, desloguear, registrarusuario, crearTarea, editarTarea } = require('./acciones_bd');
 
 const app = express();
 app.use(cors());
@@ -77,6 +77,46 @@ app.get('/archivos', async (req, res) => {
         res.status(200).json({ message: 'No hay archivos disponibles.' });
     } catch (error) {
         res.status(500).json({ error: 'Error al listar archivos - ' + error.message });
+    }
+});
+
+// Crear tarea
+app.post('/crear_tarea', async (req, res) => {
+    try {
+        const { usuario_id, titulo, descripcion } = req.body;
+        if (!usuario_id || !titulo) {
+            return res.status(400).json({ message: 'El usuario y el título son obligatorios' });
+        }
+
+        const resultado = await crearTarea(usuario_id, titulo, descripcion);
+        if (resultado) {
+            return res.status(201).json({ message: 'Tarea creada exitosamente' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo crear la tarea' });
+        }
+    } catch (error) {
+        return res.status(400).json({ message: `Error al crear tarea - ${error.message}` });
+    }
+});
+
+// Editar tarea
+app.patch('/crear_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const { titulo, descripcion } = req.body;
+
+        if (!titulo && !descripcion) {
+            return res.status(400).json({ message: 'Debe proporcionar al menos un campo para actualizar' });
+        }
+
+        const resultado = await editarTarea(tarea_id, titulo, descripcion);
+        if (resultado) {
+            return res.status(200).json({ message: 'Tarea actualizada exitosamente' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo actualizar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(400).json({ message: `Error al actualizar tarea - ${error.message}` });
     }
 });
 
