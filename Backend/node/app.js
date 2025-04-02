@@ -1,7 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { logearme, desloguear, registrarusuario, crearTarea, editarTarea } = require('./acciones_bd');
+const {
+    logearme, desloguear, registrarusuario,
+    crearTarea, editarTarea,
+    cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
+    completarTarea, eliminarTarea
+} = require('./acciones_bd');
+
 
 const app = express();
 app.use(cors());
@@ -120,6 +126,34 @@ app.patch('/crear_tarea/:tarea_id', async (req, res) => {
     }
 });
 
+// Marcar tarea como completada
+app.patch('/completar_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const result = await completarTarea(tarea_id);
+        if (result) {
+            return res.status(200).json({ message: 'Tarea marcada como completada' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo marcar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al marcar tarea como completada - ' + error.message });
+    }
+});
 
+// Eliminar tarea
+app.delete('/eliminar_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const result = await eliminarTarea(tarea_id);
+        if (result) {
+            return res.status(200).json({ message: 'Tarea eliminada exitosamente' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo eliminar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al eliminar tarea - ' + error.message });
+    }
+});
 
 app.listen(5000, () => console.log('Servidor corriendo en http://localhost:5000'));

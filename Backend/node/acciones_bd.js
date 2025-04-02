@@ -156,5 +156,41 @@ async function editarTarea(tarea_id, titulo, descripcion) {
     }
 }
 
+// Marcar tarea como completada
+async function completarTarea(tarea_id) {
+    try {
+        const conexion = await conn.getConnection();
+        const [resultado] = await conexion.execute(
+            `UPDATE tareas SET completada = TRUE WHERE id = ?`,
+            [tarea_id]
+        );
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al completar tarea:', error);
+        return false;
+    }
+}
 
-module.exports = { logearme, desloguear, registrarusuario, cargarArchivo, listarArchivos, obtenerUsuarioLogeado, crearTarea, editarTarea };
+// Eliminar tarea
+async function eliminarTarea(tarea_id) {
+    try {
+        const conexion = await conn.getConnection();
+        const [resultado] = await conexion.execute(
+            `DELETE FROM tareas WHERE id = ?`,
+            [tarea_id]
+        );
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al eliminar tarea:', error);
+        return false;
+    }
+}
+
+module.exports = {
+    logearme, desloguear, registrarusuario,
+    cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
+    crearTarea, editarTarea,
+    completarTarea, eliminarTarea
+};
