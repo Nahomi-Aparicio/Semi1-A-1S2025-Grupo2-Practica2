@@ -43,4 +43,43 @@ app.post('/registraruser', async (req, res) => {
     res.status(400).json({ error: 'Error al registrar el usuario' });
 });
 
+// Ruta para cargar archivos
+app.post('/archivos', async (req, res) => {
+    try {
+        const { usuario_id, nombre_archivo, tipo_archivo, archivo_url } = req.body;
+        
+        if (!usuario_id || !archivo_url || !nombre_archivo) {
+            return res.status(400).json({ error: 'Usuario, archivo y nombre del archivo son obligatorios.' });
+        }
+
+        const resultado = await cargarArchivo(usuario_id, nombre_archivo, tipo_archivo, archivo_url);
+        if (resultado) {
+            return res.status(201).json({ message: 'Archivo cargado exitosamente' });
+        }
+        res.status(400).json({ error: 'No se pudo cargar el archivo.' });
+    } catch (error) {
+        res.status(400).json({ error: 'Error al cargar archivo - ' + error.message });
+    }
+});
+
+// Ruta para listar archivos del usuario
+app.get('/archivos', async (req, res) => {
+    try {
+        const usuarioId = await obtenerUsuarioLogeado();
+        if (!usuarioId) {
+            return res.status(401).json({ error: 'No hay usuario logeado.' });
+        }
+
+        const archivos = await listarArchivos(usuarioId);
+        if (archivos.length > 0) {
+            return res.json({ archivos });
+        }
+        res.status(200).json({ message: 'No hay archivos disponibles.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al listar archivos - ' + error.message });
+    }
+});
+
+
+
 app.listen(5000, () => console.log('Servidor corriendo en http://localhost:5000'));
