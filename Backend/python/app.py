@@ -59,24 +59,26 @@ def registraruser():
         return jsonify({'error': 'Error en el registro - ' + str(e)}), 400
 
 
-#crear tareas
 @app.route('/crear_tarea', methods=['POST'])
 def crear_nueva_tarea():
     try:
         usuario_id = request.json.get('usuario_id')
         titulo = request.json.get('titulo')
         descripcion = request.json.get('descripcion')
+        fecha_creacion = request.json.get('fecha_creacion')  
         
-        if not usuario_id or not titulo:
-            return jsonify({'message': 'El usuario y el título son obligatorios'}), 400
+        # Validación de campos
+        if not usuario_id or not titulo or not fecha_creacion:
+            return jsonify({'message': 'El usuario, el título y la fecha son obligatorios'}), 400
         
-        resultado = crear_tarea(usuario_id, titulo, descripcion)
+        resultado = crear_tarea(usuario_id, titulo, descripcion, fecha_creacion)
         if resultado:
             return jsonify({'message': 'Tarea creada exitosamente'}), 201
         else:
             return jsonify({'message': 'No se pudo crear la tarea'}), 400
     except Exception as e:
         return jsonify({'message': 'Error al crear tarea - ' + str(e)}), 400
+
 
 #editar tareas
 @app.route('/crear_tarea/<int:tarea_id>', methods=['PATCH'])
