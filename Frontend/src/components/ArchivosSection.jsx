@@ -44,10 +44,15 @@ const ArchivosSection = () => {
             'Content-Type': 'application/json',
           },
         });
+       
 
         const data = await response.json();
-        console.log(data.archivos);
-        setTasks(data.archivos);
+
+        if (data.archivos) {
+    
+      setTasks(data.archivos);
+    } 
+       
         
     } catch (error) {
         console.error("Error en logout:", error);
@@ -152,10 +157,10 @@ const archivossubir = async (file) => {
         }}
       > {tasks.map((task) => (
         <CardArchivos
-        key={task[0]}  // Mejor usar el índice como key, pero puedes usar otro identificador único si lo tienes
-        id={task[0]}  // Tercer elemento, el ID
-        nombre={task[2]}  // Quinto elemento, el nombre del archivo
-        archivo={task[3]}  // Sexto elemento, la URL de la imagen o archivo
+        key={task[0]}  
+        id={task[0]}  
+        nombre={task[2]}  
+        archivo={task[3]}  
         url={task[4]}
       
         />

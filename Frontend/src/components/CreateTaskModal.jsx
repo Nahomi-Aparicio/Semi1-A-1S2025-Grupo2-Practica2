@@ -9,7 +9,7 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
 
   const [Título, setTítulo] = useState("");
   const [Descripción, setDescripción] = useState("");
-  const [datetime, setdatetime] = useState("");
+  const [datetime, setdatetime] = useState(new Date().toISOString().slice(0, 16));
   const [Usuario, setUsuario] = useState(null);
  
   useEffect(() => {
@@ -47,6 +47,7 @@ const crear_tarea = async () => {
     const currentDateTime = new Date().toISOString().slice(0, 16);
     setdatetime(currentDateTime);
   }
+  console.log(datetime);
 
   try {
     const formData = {

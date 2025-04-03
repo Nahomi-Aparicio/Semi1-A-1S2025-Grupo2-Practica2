@@ -39,6 +39,8 @@ const TaskSection = () => {
   };
 
   const tareas = async () => {
+
+    
     try {
       
         const response = await fetch(`${API_BASE_URL}/tareas`, {
@@ -47,10 +49,12 @@ const TaskSection = () => {
             'Content-Type': 'application/json',
           },
         });
-
         const data = await response.json();
-        console.log(data.tareas);
-        setTasks(data.tareas);
+          if (data.tareas) {
+    
+            setTasks(data.tareas);
+          } 
+        
         
         
     } catch (error) {
