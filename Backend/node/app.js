@@ -6,7 +6,7 @@ const {
     crearTarea, editarTarea,
     cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
     completarTarea, eliminarTarea,
-    obtenerUser
+    obtenerUser,listar_tareas,descompletar_tarea
 } = require('./acciones_bd');
 
 
@@ -104,6 +104,9 @@ app.get('/archivos', async (req, res) => {
     }
 });
 
+
+
+
 // Crear tarea
 app.post('/crear_tarea', async (req, res) => {
   try {
@@ -162,6 +165,9 @@ app.patch('/completar_tarea/:tarea_id', async (req, res) => {
     }
 });
 
+
+
+
 // Eliminar tarea
 app.delete('/eliminar_tarea/:tarea_id', async (req, res) => {
     try {
@@ -176,5 +182,44 @@ app.delete('/eliminar_tarea/:tarea_id', async (req, res) => {
         return res.status(500).json({ message: 'Error al eliminar tarea - ' + error.message });
     }
 });
+
+
+
+// Ruta para listar archivos del usuario
+app.get('/tareas', async (req, res) => {
+    try {
+        const usuarioId = await obtenerUsuarioLogeado();
+        if (!usuarioId) {
+            return res.status(401).json({ error: 'No hay usuario logeado.' });
+        }
+
+        const tareas = await listar_tareas(usuarioId);
+        console.log(tareas);
+        if (tareas.length > 0) {
+            return res.json({ 'tareas': tareas });
+        }
+
+        res.status(200).json({ message: 'No hay tareas disponibles.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al listar tareas - ' + error.message });
+    }
+});
+
+
+// Marcar tarea como completada
+app.patch('/descompletar_tarea/:tarea_id', async (req, res) => {
+    try {
+        const { tarea_id } = req.params;
+        const result = await descompletar_tarea(tarea_id);
+        if (result) {
+            return res.status(200).json({ message: 'Tarea marcada como incompleta' });
+        } else {
+            return res.status(400).json({ message: 'No se pudo marcar la tarea o no existe' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al marcar tarea como incompleta - ' + error.message });
+    }
+});
+
 
 app.listen(5000, () => console.log('Servidor corriendo en http://localhost:5000'));

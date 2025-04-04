@@ -50,8 +50,10 @@ const TaskSection = () => {
           },
         });
         const data = await response.json();
+        console.log(data, "tareas");
+
           if (data.tareas) {
-    
+            console.log(data.tareas);
             setTasks(data.tareas);
           } 
         
@@ -115,7 +117,6 @@ getuser();
           overflowY: "auto", 
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "1px",
           marginTop: "20px",
         }}
       >
