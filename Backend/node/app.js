@@ -106,21 +106,24 @@ app.get('/archivos', async (req, res) => {
 
 // Crear tarea
 app.post('/crear_tarea', async (req, res) => {
-    try {
-        const { usuario_id, titulo, descripcion } = req.body;
-        if (!usuario_id || !titulo) {
-            return res.status(400).json({ message: 'El usuario y el título son obligatorios' });
-        }
+  try {
+    const { usuario_id, titulo, descripcion, fecha_creacion } = req.body;
 
-        const resultado = await crearTarea(usuario_id, titulo, descripcion);
-        if (resultado) {
-            return res.status(201).json({ message: 'Tarea creada exitosamente' });
-        } else {
-            return res.status(400).json({ message: 'No se pudo crear la tarea' });
-        }
-    } catch (error) {
-        return res.status(400).json({ message: `Error al crear tarea - ${error.message}` });
+    // Verificar que todos los campos sean proporcionados
+    if (!usuario_id || !titulo || !fecha_creacion) {
+      return res.status(400).json({ message: 'El usuario, el título y la fecha son obligatorios' });
     }
+
+    const resultado = await crearTarea(usuario_id, titulo, descripcion, fecha_creacion);
+    if (resultado) {
+      return res.status(201).json({ message: 'Tarea creada exitosamente' });
+    } else {
+      return res.status(400).json({ message: 'No se pudo crear la tarea' });
+    }
+  } catch (e) {
+    console.error('Error al crear tarea:', e);
+    return res.status(500).json({ message: 'Error al crear tarea' });
+  }
 });
 
 // Editar tarea

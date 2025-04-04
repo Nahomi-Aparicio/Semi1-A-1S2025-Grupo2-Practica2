@@ -1,9 +1,10 @@
 import mysql.connector
+from datetime import datetime
 
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         
-    'password': 'mysql123',  
+    'password': '123456789',  
     'host': 'localhost',
     'database': 'taskflow_cloud'
 }
@@ -94,15 +95,16 @@ def desloguear():
             conexion.rollback()
         return False
 
-def crear_tarea(usuario_id, titulo, descripcion):
+def crear_tarea(usuario_id, titulo, descripcion, fecha_creacion):
     try:
         conexion = get_connection()
         ejecutar = conexion.cursor()
+        
         consulta = """
-            INSERT INTO tareas (usuario_id, titulo, descripcion) 
-            VALUES (%s, %s, %s)
+            INSERT INTO tareas (usuario_id, titulo, descripcion, fecha_creacion) 
+            VALUES (%s, %s, %s, %s)
         """
-        ejecutar.execute(consulta, (usuario_id, titulo, descripcion))
+        ejecutar.execute(consulta, (usuario_id, titulo, descripcion, fecha_creacion))
         conexion.commit()
         ejecutar.close()
         conexion.close()
@@ -110,6 +112,7 @@ def crear_tarea(usuario_id, titulo, descripcion):
     except Exception as e:
         print(f"Error al crear tarea: {e}")
         return False
+
     
 
 def editar_tarea(tarea_id, titulo=None, descripcion=None):
@@ -239,9 +242,29 @@ def completar_tarea(tarea_id):
         if conexion:
             conexion.rollback()
         return False
+# Marcar tarea como pendiente (descompletar)
+def descompletar_tarea(tarea_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor()
+        consulta = "UPDATE tareas SET completada = FALSE WHERE id = %s"
+        ejecutar.execute(consulta, (tarea_id,))
+        conexion.commit()
+        filas_afectadas = ejecutar.rowcount
+        ejecutar.close()
+        conexion.close()
+        return filas_afectadas > 0
+    except Exception as e:
+        print(f"Error al descompletar tarea: {e}")
+        if conexion:
+            conexion.rollback()
+        return False
+
+
 
 # Eliminar tarea
 def eliminar_tarea(tarea_id):
+    print(tarea_id)
     try:
         conexion = get_connection()
         ejecutar = conexion.cursor()
@@ -295,3 +318,27 @@ def obtenerinfologeado():
     except Exception as e:
         print("Error al obtener la información del usuario logeado:", e)
         return None
+
+# Función para listar tareas con formato de fecha dd/mm/aaaa
+def listar_tareas(usuario_id):
+    try:
+        conexion = get_connection()
+        ejecutar = conexion.cursor(dictionary=True)  
+
+        consulta = "SELECT * FROM tareas WHERE usuario_id = %s"
+        ejecutar.execute(consulta, (usuario_id,))
+        tareas = ejecutar.fetchall()
+
+        ejecutar.close()
+        conexion.close()
+
+        # Formatear la fecha antes de devolver los resultados
+        for tarea in tareas:
+            if 'fecha_creacion' in tarea and tarea['fecha_creacion']:
+                tarea['fecha_creacion'] = datetime.strptime(str(tarea['fecha_creacion']), "%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y")
+
+        return tareas if tareas else []
+
+    except Exception as e:
+        print(f"Error al listar tareas: {e}")
+        return []
