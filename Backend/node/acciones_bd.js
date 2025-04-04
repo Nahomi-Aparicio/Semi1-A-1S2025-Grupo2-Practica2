@@ -2,9 +2,9 @@ const mysql = require('mysql2');
 
 // Configuración de la conexión a la base de datos
 const config = {
-    host: 'localhost',
+    host: 'semi1practica2db.c52cskycyhy7.us-east-2.rds.amazonaws.com',
     user: 'root',
-    password: '123456789',  // Cambia esto por tu contraseña de MySQL
+    password: 'yhsRXPiSXTPtUzCKGwwf',  // Cambia esto por tu contraseña de MySQL
     database: 'taskflow_cloud'
 };
 
