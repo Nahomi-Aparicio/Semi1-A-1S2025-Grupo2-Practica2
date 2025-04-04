@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./style.css";
 import { useNavigate } from 'react-router-dom';
+
 import API_BASE_URL from '../config';
 
 const LoginPage = () => {
@@ -10,38 +11,41 @@ const LoginPage = () => {
   const [usuario, setUsuario] = useState("");
   const [imagen, setImagen] = useState("");
   const [confirmarPassword, setConfirmarPassword] = useState("");
+
   const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState("");
   const [uploadMessage, setUploadMessage] = useState("");
+  const [isUploaded, setIsUploaded] = useState(false);
+
+  const fileInputRef = useRef(null); // Ref para el input file
 
   const navigate = useNavigate();
 
-  // =========================
-  // FUNCIONES
-  // =========================
-
-  // Convertir archivo a base64
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
       reader.onerror = (error) => reject(error);
     });
 
-  // Subir archivo a API Gateway
-  const handleFileUpload = async (file) => {
-    if (!file) return alert("Seleccione un archivo");
-
+  const handleUpload = async () => {
+    if (!selectedFile) return alert("Seleccione un archivo");
     try {
-      const base64File = await toBase64(file);
+      const base64File = await toBase64(selectedFile);
       const payload = {
         file: base64File,
-        filename: file.name
+        filename: selectedFile.name
       };
 
       const response = await fetch('https://s4dhs0pk34.execute-api.us-east-2.amazonaws.com/subir', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(payload)
       });
 
@@ -49,14 +53,12 @@ const LoginPage = () => {
       const parsedBody = data.body ? JSON.parse(data.body) : data;
 
       if (parsedBody.url) {
-        setImagen(parsedBody.url); // ✅ Guardamos la URL devuelta
-        setUploadMessage("Archivo subido correctamente");
-        // limpiamos el input de archivo
-        setSelectedFile(null);
-        console.log("Archivo subido:", parsedBody.url);
+        setImagen(parsedBody.url); // Asignar URL al campo imagen
+        setIsUploaded(true);
+        setUploadMessage("Imagen subida correctamente ✅");
       } else {
-        setUploadMessage("Error al subir el archivo: " + parsedBody.message);
-        console.error(parsedBody);
+        console.error("No se recibió URL desde API Gateway", parsedBody.message);
+        setUploadMessage("Error: " + parsedBody.message);
       }
     } catch (error) {
       console.error("Error en la subida:", error);
@@ -64,22 +66,23 @@ const LoginPage = () => {
     }
   };
 
-  // Login
   const login = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ username: usuario, password: password })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Ingreso exitoso", data);
         setPassword("");
         setEmail("");
         setUsuario("");
+
         navigate('/principal');
       } else {
         alert(data.message || "Usuario o contraseña incorrecta");
@@ -90,29 +93,40 @@ const LoginPage = () => {
     }
   };
 
-  // Registro
   const Registrar = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/registraruser`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: usuario, email: email, password: password, confirmpassword: confirmarPassword, imagen: imagen })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: usuario,
+          email: email,
+          password: password,
+          confirmpassword: confirmarPassword,
+          imagen: imagen
+        })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Registro exitoso", data);
+        alert(data.message || "Registro exitoso");
+
+        // Limpiar formulario
         setPassword("");
         setEmail("");
         setUsuario("");
         setImagen("");
         setConfirmarPassword("");
+        setSelectedFile(null);
+        setPreviewURL("");
         setUploadMessage("");
-
-        alert(data.message || "Registro exitoso");
+        setIsUploaded(false);
+        fileInputRef.current.value = ""; // 👈 limpiar input file
       } else {
-        alert(data.message || "Datos inválidos o usuario existente");
+        alert(data.message || "Hubo un error al registrar");
       }
     } catch (error) {
       console.error("Error en el registro:", error);
@@ -120,14 +134,8 @@ const LoginPage = () => {
     }
   };
 
-  // =========================
-  // VISTA
-  // =========================
-
   return (
     <div className={`container ${isActive ? "active" : ""}`} id="container">
-
-      {/* Formulario de Registro */}
       <div className="form-container sign-up">
         <form>
           <h1>Registrarse</h1>
@@ -135,54 +143,67 @@ const LoginPage = () => {
           <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <input type="password" placeholder="Confirmar Password" value={confirmarPassword} onChange={(e) => setConfirmarPassword(e.target.value)} />
-
-          {/* Input de archivo */}
+          
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*,.txt"
             onChange={(e) => {
               if (e.target.files.length > 0) {
                 const file = e.target.files[0];
                 setSelectedFile(file);
-                handleFileUpload(file);
+                setIsUploaded(false);
+                setUploadMessage("");
+                const localURL = URL.createObjectURL(file);
+                setPreviewURL(localURL);
               }
             }}
           />
 
-          {/* Mensaje de subida */}
+          {previewURL && (
+            <div>
+              <img src={previewURL} alt="Preview" style={{ width: '100px', marginTop: '10px', borderRadius: '5px' }} />
+            </div>
+          )}
+
+          <button type="button" onClick={handleUpload} style={{ marginTop: '10px' }}>
+            Subir
+          </button>
+
           {uploadMessage && <p>{uploadMessage}</p>}
 
-          <button type="button" onClick={Registrar}>Registrar</button>
+          <button type="button" onClick={Registrar} disabled={!isUploaded} style={{ marginTop: '10px' }}>
+            Registrar
+          </button>
         </form>
       </div>
 
-      {/* Formulario de Login */}
       <div className="form-container sign-in">
         <form>
           <h1>Iniciar Sesión</h1>
           <span>Introduce tu usuario y contraseña</span>
+          <br />
           <input type="text" placeholder="Usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <br />
           <button type="button" onClick={login}>Iniciar Sesión</button>
         </form>
       </div>
 
-      {/* Toggle */}
       <div className="toggle-container">
         <div className="toggle">
           <div className="toggle-panel toggle-left">
-            <h1>¡Bienvenido!</h1>
+            <h1>Bienvenido!</h1>
             <p>Si ya tienes una cuenta por favor inicia sesión</p>
             <button className="hidden" onClick={() => setIsActive(false)}>Iniciar Sesión</button>
           </div>
           <div className="toggle-panel toggle-right">
-            <h1>¡Hola, Amigo!</h1>
+            <h1>Hola, Amigo!</h1>
             <p>Si no tienes cuenta por favor regístrate aquí</p>
             <button className="hidden" onClick={() => setIsActive(true)}>Registrarse</button>
           </div>
         </div>
       </div>
-
     </div>
   );
 };
