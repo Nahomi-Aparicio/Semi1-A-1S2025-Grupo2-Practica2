@@ -2,9 +2,9 @@ const mysql = require('mysql2');
 
 // Configuración de la conexión a la base de datos
 const config = {
-    host: 'semi1practica2db.c52cskycyhy7.us-east-2.rds.amazonaws.com',
+    host: 'localhost',
     user: 'root',
-    password: 'yhsRXPiSXTPtUzCKGwwf',  // Cambia esto por tu contraseña de MySQL
+    password: '123456789',  // Cambia esto por tu contraseña de MySQL
     database: 'taskflow_cloud'
 };
 
@@ -125,6 +125,7 @@ async function listarArchivos(usuarioId) {
     }
 }
 
+
 async function obtenerUsuarioLogeado() {
     try {
         const [result] = await conn.execute(
@@ -218,9 +219,47 @@ async function eliminarTarea(tarea_id) {
     }
 }
 
+async function listar_tareas(usuarioId) {
+    try {
+        const [tareas] = await conn.execute(
+            `SELECT * FROM tareas WHERE usuario_id = ?`,
+            [usuarioId]
+        );
+        
+        // Formatear la fecha como dd/mm/aaaa
+        tareas.forEach(tarea => {
+            if (tarea.fecha_creacion) {
+                const fecha = new Date(tarea.fecha_creacion);
+                const dia = String(fecha.getDate()).padStart(2, '0');
+                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                const anio = fecha.getFullYear();
+                tarea.fecha_creacion = `${dia}/${mes}/${anio}`;
+            }
+        });
+        return tareas;
+    } catch (error) {
+        console.error('Error al listar tareas:', error);
+        return [];
+    }
+}
+async function descompletar_tarea(tarea_id) {
+    try {
+        const conexion = await conn.getConnection();
+        const [resultado] = await conexion.execute(
+            `UPDATE tareas SET completada = FALSE WHERE id = ?`,
+            [tarea_id]
+        );
+        conexion.release();
+        return resultado.affectedRows > 0;
+    } catch (error) {
+        console.error('Error al completar tarea:', error);
+        return false;
+    }
+}
+
 module.exports = {
     logearme, desloguear, registrarusuario,
     cargarArchivo, listarArchivos, obtenerUsuarioLogeado,
     crearTarea, editarTarea,
-    completarTarea, eliminarTarea, obtenerUser
+    completarTarea, eliminarTarea, obtenerUser,listar_tareas,descompletar_tarea
 };

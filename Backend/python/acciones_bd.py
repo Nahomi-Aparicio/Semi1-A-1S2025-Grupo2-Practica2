@@ -216,15 +216,28 @@ def listar_archivos(usuario_id):
         ejecutar.execute(consulta, (usuario_id,))
         archivos = ejecutar.fetchall()
 
+        # Convertir las filas en un formato de diccionario
+        archivos_formateados = []
+        for archivo in archivos:
+            archivo_dict = {
+                'id': archivo[0],
+                'usuario_id': archivo[1],
+                'nombre_archivo': archivo[2],
+                'tipo_archivo': archivo[3],
+                'url_archivo': archivo[4],
+                'fecha_subida': archivo[5]  # Asegúrate de ajustar esto según tu base de datos
+            }
+            archivos_formateados.append(archivo_dict)
+
         ejecutar.close()
         conexion.close()
 
-        return archivos if archivos else []
+        return archivos_formateados if archivos_formateados else []
 
     except Exception as e:
         print(f"Error al listar archivos: {e}")
         return []
-    
+
 # Marcar tarea como completada
 def completar_tarea(tarea_id):
     try:
