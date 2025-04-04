@@ -127,7 +127,7 @@ const Card = ({id,nombre, descripcion, fecha, completed }) => {
 
   return (
     <>
-      <div className="card" style={{ width: '18rem', margin: '10px', height: '12rem', backgroundColor: 'rgb(180, 177, 177)' }}>
+      <div className="card" style={{ width: '18rem', margin: '8px', height: '12rem', backgroundColor: 'rgb(180, 177, 177)' }}>
         <div className="card-body" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <h5 className="card-title" style={{ color: '#093443', fontWeight: 'bold', fontSize: '25px', ...textStyle }}>{nombre}</h5>
           <h6 className="card-subtitle mb-2 text-body-secondary" style={{ fontWeight: 'bold', fontSize: '18px', ...textStyle }}>{fecha}</h6>

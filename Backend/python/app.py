@@ -42,8 +42,6 @@ def logout():
     except Exception as e:
         return jsonify({'error': 'Error al desloguear - ' + str(e)}), 400
     
-
-
 @app.route('/getuser', methods=['GET'])#------------------------------
 def get_user():
     try:
@@ -77,7 +75,6 @@ def registraruser():
     except Exception as e:
         return jsonify({'error': 'Error en el registro - ' + str(e)}), 400
 
-
 @app.route('/crear_tarea', methods=['POST'])#------------------------------
 def crear_nueva_tarea():
     try:
@@ -99,7 +96,6 @@ def crear_nueva_tarea():
             return jsonify({'message': 'No se pudo crear la tarea'}), 400
     except Exception as e:
         return jsonify({'message': 'Error al crear tarea - ' + str(e)}), 400
-
 
 #editar tareas
 @app.route('/crear_tarea/<int:tarea_id>', methods=['PATCH']) #------------------------------
@@ -178,8 +174,6 @@ def descompletar_tarea_endpoint(tarea_id):
     except Exception as e:
         return jsonify({'message': 'Error al marcar tarea como pendiente - ' + str(e)}), 500
 
-
-
 @app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])#------------------------------
 def eliminar_tarea_endpoint(tarea_id):
     print(tarea_id)
@@ -191,8 +185,6 @@ def eliminar_tarea_endpoint(tarea_id):
             return jsonify({'message': 'No se pudo eliminar la tarea o no existe'}), 400
     except Exception as e:
         return jsonify({'message': 'Error al eliminar tarea - ' + str(e)}), 500
-
-
 
 # Endpoint para listar tareas
 @app.route('/tareas', methods=['GET'])#------------------------------

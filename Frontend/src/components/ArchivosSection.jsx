@@ -47,8 +47,10 @@ const ArchivosSection = () => {
        
 
         const data = await response.json();
+        console.log(data, "archivos");
 
         if (data.archivos) {
+          
     
       setTasks(data.archivos);
     } 
@@ -157,11 +159,11 @@ const archivossubir = async (file) => {
         }}
       > {tasks.map((task) => (
         <CardArchivos
-        key={task[0]}  
-        id={task[0]}  
-        nombre={task[2]}  
-        archivo={task[3]}  
-        url={task[4]}
+        key={task.id}  
+        id={task.id}  
+        nombre={task.nombre_archivo}  
+        archivo={task.tipo_archivo}  
+        url={task.url_archivo}
       
         />
       ))}

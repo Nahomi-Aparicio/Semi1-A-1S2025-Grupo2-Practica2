@@ -6,9 +6,11 @@ const CardArchivos = ({ id, nombre, archivo, url }) => {
 
   useEffect(() => {
     console.log(archivo, nombre, id);
+    
    
     // Obtener el tipo de archivo
     const fileType = archivo.split('/')[0]; // "application" o "image"
+
 
     if (fileType === 'image' ) {
       setImgSrc('https://i.pinimg.com/736x/df/22/13/df2213c30f4397e9292e20f99583f304.jpg'); 
