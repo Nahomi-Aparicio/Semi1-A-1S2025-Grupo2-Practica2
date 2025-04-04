@@ -4,8 +4,8 @@ from datetime import datetime
 # Configuración de la conexión a la base de datos
 config = {
     'user': 'root',         
-    'password': '123456789',  
-    'host': 'localhost',
+    'password': 'yhsRXPiSXTPtUzCKGwwf',  
+    'host': 'semi1practica2db.c52cskycyhy7.us-east-2.rds.amazonaws.com',
     'database': 'taskflow_cloud'
 }
 
