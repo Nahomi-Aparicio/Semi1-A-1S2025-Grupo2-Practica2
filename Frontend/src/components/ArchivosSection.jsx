@@ -28,27 +28,29 @@ const ArchivosSection = () => {
       }
     };
 
-    const archivos = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/archivos`, {
-          method: 'GET', 
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-        setTasks(data.archivos || []);
-        
-      } catch (error) {
-        console.error("Error en archivos:", error);
-        alert(`Hubo un problema con el servidor: ${error.message}`);
-      }
-    };
+    
 
     getuser();
     archivos();
   }, []);
+
+  const archivos = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/archivos`, {
+        method: 'GET', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      setTasks(data.archivos || []);
+      
+    } catch (error) {
+      console.error("Error en archivos:", error);
+      alert(`Hubo un problema con el servidor: ${error.message}`);
+    }
+  };
 
   // Función para convertir el archivo a Base64
   const toBase64 = (file) =>
@@ -143,8 +145,8 @@ const ArchivosSection = () => {
 
       const data = await response.json();
       alert("Archivo subido con éxito");
+      archivos();
       //recargamos la pagina
-      window.location.reload();
     } catch (error) {
       console.error("Error al subir el archivo:", error);
       alert("Hubo un problema con el servidor.");
