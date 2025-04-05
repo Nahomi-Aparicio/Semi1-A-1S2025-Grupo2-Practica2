@@ -1,0 +1,78 @@
+.container {
+    font-family: Arial, sans-serif;
+    background-color: #c92d2d;
+    max-width: 1000px;
+    margin-top: -40px;
+  }
+  
+  .header {
+    text-align: center;
+   
+  }
+  
+  .formContainer {
+    margin-bottom: 20px;
+  }
+  
+  .formTitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    min-height: 80px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .button.deleteButton {
+    background-color: red;
+  }
+  
+  .buttonContainer {
+    margin-top: 10px;
+  }
+  
+  .listTitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .taskList {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .taskItem {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .taskItem.completed {
+    text-decoration: line-through;
+  }

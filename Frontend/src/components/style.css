@@ -1,0 +1,34 @@
+
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    width: 20%;
+    height: 5%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .file-input-btn {
+    display: block;
+    padding: 12px 20px;
+    background: #093443;
+    width: 30%;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  
+  .file-input-btn:hover {
+    background: #3a7bc8;
+  }
+  
+  .file-input-name {
+    width: 75%;
+    display: block;
+    margin-top: -40px;
+    font-size: 16px;
+    color: #000000;
+    text-align: center;
+
+  }
